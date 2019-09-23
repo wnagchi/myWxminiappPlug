@@ -12,9 +12,10 @@ getHeight('aaa',function(e){
 let getHeight=(argument,callback)=>{
 
    let text = "#" + argument;
-   let thisHeight=wx.getStorageSync(argument+'getHeight')
+   let thisHeight=wx.getStorageSync(argument+'getHeight');  
+   console.log(thisHeight)
    if(thisHeight){
-     console.log('id:'+argument+'有缓存高度',res)
+     console.log('id:'+argument+'有缓存高度',thisHeight)
     callback({
       height:thisHeight.height,
       width:thisHeight.width,
@@ -32,7 +33,10 @@ let getHeight=(argument,callback)=>{
               right:res[0].right,
               top:res[0].top,
             })
+            console.log(res)
             wx.setStorageSync(argument+'getHeight', res[0]);
+            let thisHeight=wx.getStorageSync(argument+'getHeight');
+            console.log(thisHeight)
           }else{
             callback({
               height:0,
@@ -49,18 +53,26 @@ let getHeight=(argument,callback)=>{
 }
 
 let getNode=(name,callback,arr=[])=>{
-  let property=['margin', 'backgroundColor','fontSize','color','padding'].concat(arr);;
-   wx.createSelectorQuery().select(name).fields({
-      dataset: true,
-      size: true,
-      scrollOffset: true,
-      properties: ['scrollX', 'scrollY'],
-      computedStyle: property,
-      context: true,
-      node:true
-    }, function (res) {
-     callback(res)
-    }).exec()
+  let property=['margin', 'backgroundColor','fontSize','color','padding'].concat(arr);
+  let thisNode=wx.getStorageSync(name+'getNode');
+    if(thisNode){
+      console.log('id:'+name+'有缓存获取node',thisNode)
+      callback(thisNode)
+    }else{
+      wx.createSelectorQuery().select(name).fields({
+        dataset: true,
+        size: true,
+        scrollOffset: true,
+        properties: ['scrollX', 'scrollY'],
+        computedStyle: property,
+        context: true,
+        node:true
+      }, function (res) {
+       callback(res)
+       wx.setStorageSync(name+'getNode', res);
+      }).exec()
+    }
+   
 }    
 
 let smImg=(path,weight)=>{
